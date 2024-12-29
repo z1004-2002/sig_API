@@ -70,7 +70,7 @@ public class ResultService {
             if (isInResultLevel(resultLevels, r.getBureau().getArrondisssement())) {
                 resultLevels.stream().forEach(
                         rl -> {
-                            if (rl.getLevel().equals(r.getBureau().getArrondisssement())) {
+                            if (rl.getName().equals(r.getBureau().getArrondisssement())) {
                                 rl.getResultCandidat().stream().forEach(
                                         rc -> {
                                             if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
@@ -82,7 +82,8 @@ public class ResultService {
                         });
             } else {
                 ResultLevel rl = ResultLevel.builder()
-                        .level(r.getBureau().getArrondisssement())
+                        .level("arrondissement")
+                        .name(r.getBureau().getArrondisssement())
                         .resultCandidat(
                                 new ArrayList<>(candidats))
                         .build();
@@ -113,7 +114,7 @@ public class ResultService {
             if (isInResultLevel(resultLevels, r.getBureau().getDepartement())) {
                 resultLevels.stream().forEach(
                         rl -> {
-                            if (rl.getLevel().equals(r.getBureau().getDepartement())) {
+                            if (rl.getName().equals(r.getBureau().getDepartement())) {
                                 rl.getResultCandidat().stream().forEach(
                                         rc -> {
                                             if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
@@ -125,7 +126,8 @@ public class ResultService {
                         });
             } else {
                 ResultLevel rl = ResultLevel.builder()
-                        .level(r.getBureau().getDepartement())
+                        .level("departement")
+                        .name(r.getBureau().getDepartement())
                         .resultCandidat(
                                 new ArrayList<>(candidats))
                         .build();
@@ -156,7 +158,7 @@ public class ResultService {
             if (isInResultLevel(resultLevels, r.getBureau().getRegion())) {
                 resultLevels.stream().forEach(
                         rl -> {
-                            if (rl.getLevel().equals(r.getBureau().getRegion())) {
+                            if (rl.getName().equals(r.getBureau().getRegion())) {
                                 rl.getResultCandidat().stream().forEach(
                                         rc -> {
                                             if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
@@ -168,7 +170,8 @@ public class ResultService {
                         });
             } else {
                 ResultLevel rl = ResultLevel.builder()
-                        .level(r.getBureau().getRegion())
+                        .level("region")
+                        .name(r.getBureau().getRegion())
                         .resultCandidat(
                                 new ArrayList<>(candidats))
                         .build();
@@ -210,8 +213,7 @@ public class ResultService {
 
     private boolean isInResultLevel(List<ResultLevel> resultLevels, String levelName) {
         return resultLevels.stream()
-                .anyMatch(
-                        r -> r.getLevel().equals(levelName));
+                .anyMatch(r -> r.getName().equals(levelName));
     }
 
     private ResultCandidat toResultCandidat(Candidat c) {
