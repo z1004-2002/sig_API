@@ -36,14 +36,18 @@ public class ResultController {
     }
 
     @GetMapping("/bureau/{bureauId}")
-    public List<ResultResponse> getAllResultsByBureau(@PathVariable UUID bureauId){
-        return resultService.getAllResultsByBureau(bureauId);
+    public ResultLevel getAllResultsByBureau(@PathVariable UUID bureauId){
+        return resultService.getResultsForBureau(bureauId);
     }
     @DeleteMapping("/delete/{id}")
     public void deleteResult(@PathVariable UUID id){
         resultService.deleteResult(id);
     }
 
+    @GetMapping("/bureau")
+    public List<ResultLevel> resultByBureau() {
+        return resultService.resultByBureau();
+    }
     @GetMapping("/arrondissement")
     public List<ResultLevel> resultByArrondissement() {
         return resultService.resultByArrondissement();

@@ -1,6 +1,5 @@
 package com._gi.sig.repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,5 +15,5 @@ public interface ResultatRepository extends JpaRepository<Result, UUID>{
     public List<Result> findByBureauIdAndCandidatId(UUID bureauId,UUID candidateId);
 
     @Query("SELECT r FROM Result r WHERE r.bureauId = ?1")
-    public Collection<Result> findByBureauId(UUID bureauId);
+    public List<Result> findByBureauId(UUID bureauId);
 }

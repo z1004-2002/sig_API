@@ -43,10 +43,47 @@ public class ResultService {
 
     }
 
-    public List<ResultResponse> getAllResultsByBureau(UUID bureauId) {
-        return resultatRepository.findByBureauId(bureauId).stream()
+    public List<ResultLevel> resultByBureau() {
+        List<ResultLevel> resultLevels = getBureauLevel();
+        List<ResultResponse> results = resultatRepository.findAll().stream()
                 .map(this::toResusltResponse)
                 .toList();
+
+        for (ResultResponse r : results) {
+            resultLevels.stream().forEach(
+                    rl -> {
+                        if (rl.getName().equals(r.getBureau().getMatricule())) {
+                            rl.getResultCandidat().stream().forEach(
+                                    rc -> {
+                                        if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
+                                            rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
+                                        }
+                                    });
+                        }
+                    });
+
+        }
+
+        return resultLevels;
+    }
+
+    public ResultLevel getResultsForBureau(UUID bureauId) {
+        ResultLevel resultLevel = getBureau(bureauId);
+        List<ResultResponse> results = resultatRepository.findByBureauId(bureauId).stream()
+                .map(this::toResusltResponse)
+                .toList();
+        for (ResultResponse r : results) {
+            resultLevel.getResultCandidat().stream().forEach(
+                    rc -> {
+                        if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
+                            rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
+                            resultLevel.setTotalElecteur(
+                                resultLevel.getTotalElecteur() + r.getBureau().getNbreElecteurs());
+                        }
+                    });
+        }
+
+        return resultLevel;
     }
 
     public void deleteResult(UUID id) {
@@ -72,8 +109,6 @@ public class ResultService {
                                     rc -> {
                                         if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
                                             rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                            rl.setTotalElecteur(
-                                                    rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
                                         }
                                     });
                         }
@@ -98,8 +133,6 @@ public class ResultService {
                                     rc -> {
                                         if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
                                             rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                            rl.setTotalElecteur(
-                                                    rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
                                         }
                                     });
                         }
@@ -111,7 +144,7 @@ public class ResultService {
     }
 
     public List<ResultLevel> resultByRegion() {
-        List<ResultLevel> resultLevels = getArrondissementLevel();
+        List<ResultLevel> resultLevels = getRegionLevel();
         List<ResultResponse> results = resultatRepository.findAll().stream()
                 .map(this::toResusltResponse)
                 .toList();
@@ -124,8 +157,6 @@ public class ResultService {
                                     rc -> {
                                         if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
                                             rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                            rl.setTotalElecteur(
-                                                    rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
                                         }
                                     });
                         }
@@ -139,10 +170,17 @@ public class ResultService {
         List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
                 .map(this::toResultCandidat)
                 .toList();
-        ResultLevel resultLevel = ResultLevel.builder().resultCandidat(candidats).totalElecteur(0).build();
+        ResultLevel resultLevel = ResultLevel.builder()
+                .resultCandidat(new ArrayList<>(candidats))
+                .level("Pays")
+                .name("Cameroun")
+                .totalElecteur(0)
+                .build();
         List<ResultResponse> results = resultatRepository.findAll().stream()
                 .map(this::toResusltResponse)
                 .toList();
+        List<BureauRes> bureauRes = bureauService.getAllBureauRes();
+        resultLevel.setTotalElecteur(bureauRes.stream().mapToInt(BureauRes::getNbreElecteurs).sum());
 
         for (ResultResponse r : results) {
             resultLevel.getResultCandidat().stream().forEach(
@@ -151,7 +189,6 @@ public class ResultService {
                             rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
                         }
                     });
-            resultLevel.setTotalElecteur(resultLevel.getTotalElecteur() + r.getNombreVoie());
 
         }
         return resultLevel;
@@ -185,63 +222,131 @@ public class ResultService {
     }
 
     private List<ResultLevel> getRegionLevel() {
-        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
-                .map(this::toResultCandidat)
-                .toList();
         List<ResultLevel> resultLevels = new ArrayList<>();
         List<BureauRes> bureauRes = bureauService.getAllBureauRes();
-
+        
         for (BureauRes br : bureauRes) {
             if (!isInResultLevel(resultLevels, br.getRegion())) {
+                List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                        .map(this::toResultCandidat)
+                        .toList();
                 ResultLevel rl = ResultLevel.builder()
                         .level("region")
                         .name(br.getRegion())
                         .resultCandidat(new ArrayList<>(candidats))
+                        .totalElecteur(br.getNbreElecteurs())
                         .build();
                 resultLevels.add(rl);
+            } else {
+                resultLevels.stream().forEach(
+                        r -> {
+                            if (r.getName().equals(br.getRegion())) {
+                                r.setTotalElecteur(r.getTotalElecteur() + br.getNbreElecteurs());
+                            }
+                        });
             }
         }
         return resultLevels;
     }
 
     private List<ResultLevel> getDepartementLevel() {
-        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
-                .map(this::toResultCandidat)
-                .toList();
         List<ResultLevel> resultLevels = new ArrayList<>();
         List<BureauRes> bureauRes = bureauService.getAllBureauRes();
-
+        
         for (BureauRes br : bureauRes) {
             if (!isInResultLevel(resultLevels, br.getDepartement())) {
+                List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                        .map(this::toResultCandidat)
+                        .toList();
                 ResultLevel rl = ResultLevel.builder()
                         .level("departement")
                         .name(br.getDepartement())
                         .resultCandidat(new ArrayList<>(candidats))
+                        .totalElecteur(br.getNbreElecteurs())
                         .build();
                 resultLevels.add(rl);
+            } else {
+                resultLevels.stream().forEach(
+                        r -> {
+                            if (r.getName().equals(br.getDepartement())) {
+                                r.setTotalElecteur(r.getTotalElecteur() + br.getNbreElecteurs());
+                            }
+                        });
             }
         }
         return resultLevels;
     }
 
     private List<ResultLevel> getArrondissementLevel() {
-        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
-                .map(this::toResultCandidat)
-                .toList();
         List<ResultLevel> resultLevels = new ArrayList<>();
         List<BureauRes> bureauRes = bureauService.getAllBureauRes();
-
+        
         for (BureauRes br : bureauRes) {
             if (!isInResultLevel(resultLevels, br.getArrondisssement())) {
+                List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                        .map(this::toResultCandidat)
+                        .toList();
                 ResultLevel rl = ResultLevel.builder()
                         .level("arrondissement")
                         .name(br.getArrondisssement())
                         .resultCandidat(new ArrayList<>(candidats))
+                        .totalElecteur(br.getNbreElecteurs())
                         .build();
                 resultLevels.add(rl);
+            } else {
+                resultLevels.stream().forEach(
+                        r -> {
+                            if (r.getName().equals(br.getArrondisssement())) {
+                                r.setTotalElecteur(r.getTotalElecteur() + br.getNbreElecteurs());
+                            }
+                        });
             }
         }
         return resultLevels;
     }
 
+    private List<ResultLevel> getBureauLevel() {
+        List<ResultLevel> resultLevels = new ArrayList<>();
+        List<BureauRes> bureauRes = bureauService.getAllBureauRes();
+        
+        for (BureauRes br : bureauRes) {
+            if (!isInResultLevel(resultLevels, br.getMatricule())) {
+                List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                        .map(this::toResultCandidat)
+                        .toList();
+                ResultLevel rl = ResultLevel.builder()
+                        .level("bureau")
+                        .name(br.getMatricule())
+                        .resultCandidat(new ArrayList<>(candidats))
+                        .totalElecteur(br.getNbreElecteurs())
+                        .build();
+                resultLevels.add(rl);
+            } else {
+                resultLevels.stream().forEach(
+                        r -> {
+                            if (r.getName().equals(br.getMatricule())) {
+                                r.setTotalElecteur(r.getTotalElecteur() + br.getNbreElecteurs());
+                            }
+                        });
+            }
+        }
+        return resultLevels;
+    }
+
+    private ResultLevel getBureau(UUID bureauId) {
+        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                .map(this::toResultCandidat)
+                .toList();
+
+        BureauRes bureauRes = bureauService.getOneBureau(bureauId);
+
+        ResultLevel rl = ResultLevel.builder()
+                .level("bureau")
+                .name(bureauRes.getMatricule())
+                .resultCandidat(new ArrayList<>(candidats))
+                .totalElecteur(bureauRes.getNbreElecteurs())
+                .build();
+
+        return rl;
+    }
 }
