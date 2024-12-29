@@ -2,8 +2,6 @@ package com._gi.sig.dto;
 
 import java.util.UUID;
 
-import com._gi.sig.models.Candidat;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultResponse {
+public class BureauRes {
     private UUID id;
-    private BureauRes bureau;
-    private Candidat candidat;
-    private Integer nombreVoie;
+    private String matricule;
+    private String region;
+    private String departement;
+    private String arrondisssement;
+    private Integer nbreElecteurs;
 }

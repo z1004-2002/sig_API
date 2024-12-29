@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com._gi.sig.dto.BureauDto;
 import com._gi.sig.dto.BureauRequest;
+import com._gi.sig.dto.BureauRes;
 import com._gi.sig.dto.UserDto;
 import com._gi.sig.models.Bureau;
 import com._gi.sig.models.Role;
@@ -49,6 +50,22 @@ public class BureauService {
         return bureauRepository.findAll().stream().map(this::toBureauDto).toList();
     }
 
+
+    public BureauRes getOneBureau(UUID bureauId) {
+        Bureau b = bureauRepository.findById(bureauId).orElse(null);
+        return BureauRes.builder()
+        .id(b.getId())
+        .matricule(b.getMatricule())
+        .region(b.getRegion())
+        .departement(b.getDepartement())
+        .arrondisssement(b.getArrondisssement())
+        .nbreElecteurs(b.getNbreElecteurs())
+        .build();
+    }
+    public List<BureauRes> getAllBureauRes() {
+        return bureauRepository.findAll().stream().map(this::toBureauRes).toList();
+    }
+
     public BureauDto getBureau(UUID id){
         return bureauRepository.findById(id).map(this::toBureauDto).orElse(null);
     }
@@ -82,6 +99,16 @@ public class BureauService {
         .scrutateur(
             userService.getUser(bureau.getScrutateurId())
         )
+        .build();
+    }
+    private BureauRes toBureauRes(Bureau bureau){
+        return BureauRes.builder()
+        .id(bureau.getId())
+        .matricule(bureau.getMatricule())
+        .arrondisssement(bureau.getArrondisssement())
+        .departement(bureau.getDepartement())
+        .region(bureau.getRegion())
+        .nbreElecteurs(bureau.getNbreElecteurs())
         .build();
     }
 }

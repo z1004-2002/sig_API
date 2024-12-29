@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com._gi.sig.dto.BureauRes;
 import com._gi.sig.dto.ResultCandidat;
 import com._gi.sig.dto.ResultLevel;
 import com._gi.sig.dto.ResultRequest;
@@ -58,132 +59,77 @@ public class ResultService {
     }
 
     public List<ResultLevel> resultByArrondissement() {
-        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
-                .map(this::toResultCandidat)
-                .toList();
-        List<ResultLevel> resultLevels = new ArrayList<>();
+        List<ResultLevel> resultLevels = getArrondissementLevel();
         List<ResultResponse> results = resultatRepository.findAll().stream()
                 .map(this::toResusltResponse)
                 .toList();
 
         for (ResultResponse r : results) {
-            if (isInResultLevel(resultLevels, r.getBureau().getArrondisssement())) {
-                resultLevels.stream().forEach(
-                        rl -> {
-                            if (rl.getName().equals(r.getBureau().getArrondisssement())) {
-                                rl.getResultCandidat().stream().forEach(
-                                        rc -> {
-                                            if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
-                                                rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                                rl.setTotalElecteur(rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
-                                            }
-                                        });
-                            }
-                        });
-            } else {
-                ResultLevel rl = ResultLevel.builder()
-                        .level("arrondissement")
-                        .name(r.getBureau().getArrondisssement())
-                        .resultCandidat(
-                                new ArrayList<>(candidats))
-                        .build();
-                rl.getResultCandidat().stream().forEach(
-                        rc -> {
-                            if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
-                                rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                rl.setTotalElecteur(rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
-                            }
-                        });
-                resultLevels.add(rl);
-            }
+            resultLevels.stream().forEach(
+                    rl -> {
+                        if (rl.getName().equals(r.getBureau().getArrondisssement())) {
+                            rl.getResultCandidat().stream().forEach(
+                                    rc -> {
+                                        if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
+                                            rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
+                                            rl.setTotalElecteur(
+                                                    rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
+                                        }
+                                    });
+                        }
+                    });
+
         }
 
         return resultLevels;
     }
 
     public List<ResultLevel> resultByDepartement() {
-        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
-                .map(this::toResultCandidat)
-                .toList();
-        List<ResultLevel> resultLevels = new ArrayList<>();
+        List<ResultLevel> resultLevels = getDepartementLevel();
         List<ResultResponse> results = resultatRepository.findAll().stream()
                 .map(this::toResusltResponse)
                 .toList();
 
         for (ResultResponse r : results) {
-            if (isInResultLevel(resultLevels, r.getBureau().getDepartement())) {
-                resultLevels.stream().forEach(
-                        rl -> {
-                            if (rl.getName().equals(r.getBureau().getDepartement())) {
-                                rl.getResultCandidat().stream().forEach(
-                                        rc -> {
-                                            if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
-                                                rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                                rl.setTotalElecteur(rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
-                                            }
-                                        });
-                            }
-                        });
-            } else {
-                ResultLevel rl = ResultLevel.builder()
-                        .level("departement")
-                        .name(r.getBureau().getDepartement())
-                        .resultCandidat(
-                                new ArrayList<>(candidats))
-                        .build();
-                rl.getResultCandidat().stream().forEach(
-                        rc -> {
-                            if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
-                                rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                rl.setTotalElecteur(rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
-                            }
-                        });
-                resultLevels.add(rl);
-            }
+            resultLevels.stream().forEach(
+                    rl -> {
+                        if (rl.getName().equals(r.getBureau().getDepartement())) {
+                            rl.getResultCandidat().stream().forEach(
+                                    rc -> {
+                                        if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
+                                            rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
+                                            rl.setTotalElecteur(
+                                                    rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
+                                        }
+                                    });
+                        }
+                    });
+
         }
 
         return resultLevels;
     }
 
     public List<ResultLevel> resultByRegion() {
-        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
-                .map(this::toResultCandidat)
-                .toList();
-        List<ResultLevel> resultLevels = new ArrayList<>();
+        List<ResultLevel> resultLevels = getArrondissementLevel();
         List<ResultResponse> results = resultatRepository.findAll().stream()
                 .map(this::toResusltResponse)
                 .toList();
 
         for (ResultResponse r : results) {
-            if (isInResultLevel(resultLevels, r.getBureau().getRegion())) {
-                resultLevels.stream().forEach(
-                        rl -> {
-                            if (rl.getName().equals(r.getBureau().getRegion())) {
-                                rl.getResultCandidat().stream().forEach(
-                                        rc -> {
-                                            if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
-                                                rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                                rl.setTotalElecteur(rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
-                                            }
-                                        });
-                            }
-                        });
-            } else {
-                ResultLevel rl = ResultLevel.builder()
-                        .level("region")
-                        .name(r.getBureau().getRegion())
-                        .resultCandidat(
-                                new ArrayList<>(candidats))
-                        .build();
-                rl.getResultCandidat().stream().forEach(
-                        rc -> {
-                            if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
-                                rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                                rl.setTotalElecteur(rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
-                            }
-                        });
-                resultLevels.add(rl);
-            }
+            resultLevels.stream().forEach(
+                    rl -> {
+                        if (rl.getName().equals(r.getBureau().getRegion())) {
+                            rl.getResultCandidat().stream().forEach(
+                                    rc -> {
+                                        if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
+                                            rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
+                                            rl.setTotalElecteur(
+                                                    rl.getTotalElecteur() + r.getBureau().getNbreElecteurs());
+                                        }
+                                    });
+                        }
+                    });
         }
 
         return resultLevels;
@@ -230,13 +176,72 @@ public class ResultService {
     private ResultResponse toResusltResponse(Result result) {
         return ResultResponse.builder()
                 .id(result.getId())
-                .bureau(
-                        bureauService.getBureau(result.getBureauId()))
+                .bureau(bureauService.getOneBureau(result.getBureauId()))
                 .candidat(
                         candidatService.getCandidat(result.getCandidatId()))
                 .nombreVoie(result.getNombreVoie())
                 .build();
 
+    }
+
+    private List<ResultLevel> getRegionLevel() {
+        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                .map(this::toResultCandidat)
+                .toList();
+        List<ResultLevel> resultLevels = new ArrayList<>();
+        List<BureauRes> bureauRes = bureauService.getAllBureauRes();
+
+        for (BureauRes br : bureauRes) {
+            if (!isInResultLevel(resultLevels, br.getRegion())) {
+                ResultLevel rl = ResultLevel.builder()
+                        .level("region")
+                        .name(br.getRegion())
+                        .resultCandidat(new ArrayList<>(candidats))
+                        .build();
+                resultLevels.add(rl);
+            }
+        }
+        return resultLevels;
+    }
+
+    private List<ResultLevel> getDepartementLevel() {
+        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                .map(this::toResultCandidat)
+                .toList();
+        List<ResultLevel> resultLevels = new ArrayList<>();
+        List<BureauRes> bureauRes = bureauService.getAllBureauRes();
+
+        for (BureauRes br : bureauRes) {
+            if (!isInResultLevel(resultLevels, br.getDepartement())) {
+                ResultLevel rl = ResultLevel.builder()
+                        .level("departement")
+                        .name(br.getDepartement())
+                        .resultCandidat(new ArrayList<>(candidats))
+                        .build();
+                resultLevels.add(rl);
+            }
+        }
+        return resultLevels;
+    }
+
+    private List<ResultLevel> getArrondissementLevel() {
+        List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
+                .map(this::toResultCandidat)
+                .toList();
+        List<ResultLevel> resultLevels = new ArrayList<>();
+        List<BureauRes> bureauRes = bureauService.getAllBureauRes();
+
+        for (BureauRes br : bureauRes) {
+            if (!isInResultLevel(resultLevels, br.getArrondisssement())) {
+                ResultLevel rl = ResultLevel.builder()
+                        .level("arrondissement")
+                        .name(br.getArrondisssement())
+                        .resultCandidat(new ArrayList<>(candidats))
+                        .build();
+                resultLevels.add(rl);
+            }
+        }
+        return resultLevels;
     }
 
 }
