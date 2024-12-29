@@ -1,5 +1,7 @@
 package com._gi.sig.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultRequest {
-    private Integer nombreVoie;;
+public class ResultLevel {
+    private String level;
+    private String name;
+    private Integer totalElecteur;
+    private List<ResultCandidat> resultCandidat;
 }
