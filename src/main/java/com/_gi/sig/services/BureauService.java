@@ -16,8 +16,10 @@ import com._gi.sig.models.User;
 import com._gi.sig.repository.BureauRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class BureauService {
     @Autowired
     private BureauRepository bureauRepository;
@@ -49,7 +51,14 @@ public class BureauService {
     public List<BureauDto> getBureaus(){
         return bureauRepository.findAll().stream().map(this::toBureauDto).toList();
     }
-
+    public BureauDto getBureauByScrutateur(UUID scrutateurId){
+        BureauDto bureau = null;
+        List<BureauDto> bureaus = bureauRepository.findByScrutateur(scrutateurId).stream().map(this::toBureauDto).toList();
+        if(bureaus.size() > 0){
+            bureau = bureaus.get(0);
+        }
+        return bureau;
+    }
 
     public BureauRes getOneBureau(UUID bureauId) {
         Bureau b = bureauRepository.findById(bureauId).orElse(null);
@@ -83,7 +92,13 @@ public class BureauService {
         return toBureauDto(bureauRepository.save(bureau));
     }
 
-    public String deleteBureau(UUID id){
+    public String deleteBureau(UUID id) throws Exception{
+        BureauDto bureauDto = getBureau(id);
+        if(bureauDto == null){
+            throw new IllegalStateException("Bureau not found");
+        } 
+        String s = userService.deleteUser(bureauDto.getScrutateur().getId());
+        log.info(s);
         bureauRepository.deleteById(id);
         return "Bureau deleted successfully";
     }

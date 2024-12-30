@@ -39,18 +39,22 @@ public class BureauController {
         return bureauService.getBureaus();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/one/{id}")
     public BureauDto getBureau(@PathVariable UUID id){
         return bureauService.getBureau(id);
+    }   
+    @GetMapping("/scrutatreur/{id}")
+    public BureauDto getBureauByScrutateur(@PathVariable UUID id){
+        return bureauService.getBureauByScrutateur(id);
     }
-
+ 
     @PutMapping("/update/{id}")
     public BureauDto updateBureau(@PathVariable UUID id, @RequestBody BureauRequest request){
         return bureauService.updateBureau(id, request);
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deleteBureau(@PathVariable UUID id){
+    public String deleteBureau(@PathVariable UUID id) throws Exception{
         return bureauService.deleteBureau(id);
     }
 }

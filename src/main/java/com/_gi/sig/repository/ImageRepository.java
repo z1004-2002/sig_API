@@ -12,6 +12,6 @@ import com._gi.sig.models.Image;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, UUID>{
-	@Query("SELECT i FROM Image i WHERE idRessource = ?1 ALLOW FILTERING")
+	@Query("SELECT i FROM Image i WHERE i.idBureau = ?1 ")
 	List<Image> findByIdRessource(String idBureau);
 }
