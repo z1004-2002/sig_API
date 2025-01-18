@@ -77,8 +77,6 @@ public class ResultService {
                     rc -> {
                         if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
                             rc.setNombreVoie(rc.getNombreVoie() + r.getNombreVoie());
-                            resultLevel.setTotalElecteur(
-                                resultLevel.getTotalElecteur() + r.getBureau().getNbreElecteurs());
                         }
                     });
         }

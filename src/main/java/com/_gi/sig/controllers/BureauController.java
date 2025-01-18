@@ -30,7 +30,7 @@ public class BureauController {
     private BureauService bureauService;
 
     @PostMapping("/create")
-    public BureauDto createBureau(@RequestBody BureauRequest request) {
+    public BureauDto createBureau(@RequestBody BureauRequest request) throws Exception {
         return bureauService.createBureau(request);
     }
 
@@ -43,7 +43,7 @@ public class BureauController {
     public BureauDto getBureau(@PathVariable UUID id){
         return bureauService.getBureau(id);
     }   
-    @GetMapping("/scrutatreur/{id}")
+    @GetMapping("/scrutatreur/{id}") 
     public BureauDto getBureauByScrutateur(@PathVariable UUID id){
         return bureauService.getBureauByScrutateur(id);
     }

@@ -25,9 +25,11 @@ public class BureauService {
     private BureauRepository bureauRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FileService fileService;
 
     @Transactional
-    public BureauDto createBureau(BureauRequest request){
+    public BureauDto createBureau(BureauRequest request) throws Exception{
         UserDto user = userService.createUser(
             User.builder()
             .login(request.getScrutateur().getLogin())
@@ -113,6 +115,9 @@ public class BureauService {
         .nbreElecteurs(bureau.getNbreElecteurs())
         .scrutateur(
             userService.getUser(bureau.getScrutateurId())
+        )
+        .pv(
+            fileService.getFilesByBureauId(bureau.getId())
         )
         .build();
     }

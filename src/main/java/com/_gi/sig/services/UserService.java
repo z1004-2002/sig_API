@@ -16,9 +16,13 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserDto createUser(User user) {
+    public UserDto createUser(User user) throws Exception {
+        // verify if user is already exist by his login an return an error message if user already exists
+        if(userRepository.findByLogin(user.getLogin()).size() > 0) {
+            throw new Exception("Ce Scrutateur existe déjà: " + user.getLogin());
+        }
         return toUserDto(userRepository.save(user));
-    }
+    } 
 
     public UserDto authentication(AuthUser authUser) throws Exception{
         List<User> users = userRepository.findByLogin(authUser.getLogin());

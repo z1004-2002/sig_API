@@ -1,6 +1,9 @@
 package com._gi.sig.dto;
 
+import java.util.List;
 import java.util.UUID;
+
+import com._gi.sig.models.FileDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,4 +22,5 @@ public class BureauDto {
     private String arrondisssement;
     private Integer nbreElecteurs;
     private UserDto scrutateur;
+    private List<FileDto> pv;
 }

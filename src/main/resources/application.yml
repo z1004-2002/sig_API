@@ -15,6 +15,12 @@ spring:
 
     application:
         name: sig
+    servlet:
+        multipart:
+            enabled: true
+            file-size-threshold: 2KB
+            max-file-size: 1024MB
+            max-request-size: 1024MB
         
 
 sig:
@@ -24,4 +30,4 @@ sig:
         url: http://localhost:3001
     
 data:
-    product-dir: /src/main/resources/image
+    image: /src/main/resources/image

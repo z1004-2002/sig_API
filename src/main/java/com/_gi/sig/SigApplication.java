@@ -2,6 +2,7 @@ package com._gi.sig;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.util.List;
 
@@ -9,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
+import com._gi.sig.config.FileStorageProperties;
 import com._gi.sig.models.Role;
 import com._gi.sig.models.User;
 import com._gi.sig.repository.UserRepository;
 
 @SpringBootApplication
+@EnableConfigurationProperties(FileStorageProperties.class)
 public class SigApplication {
 
 	@Autowired
