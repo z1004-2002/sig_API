@@ -11,9 +11,11 @@ import com._gi.sig.dto.BureauRequest;
 import com._gi.sig.dto.BureauRes;
 import com._gi.sig.dto.UserDto;
 import com._gi.sig.models.Bureau;
+import com._gi.sig.models.Result;
 import com._gi.sig.models.Role;
 import com._gi.sig.models.User;
 import com._gi.sig.repository.BureauRepository;
+import com._gi.sig.repository.ResultatRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,8 @@ public class BureauService {
     private UserService userService;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private ResultatRepository resultatRepository;
 
     @Transactional
     public BureauDto createBureau(BureauRequest request) throws Exception{
@@ -101,6 +105,10 @@ public class BureauService {
         } 
         String s = userService.deleteUser(bureauDto.getScrutateur().getId());
         log.info(s);
+        List<Result> results = resultatRepository.findByBureauId(id);
+        for(Result result : results){
+            resultatRepository.deleteById(result.getId());
+        }
         bureauRepository.deleteById(id);
         return "Bureau deleted successfully";
     }

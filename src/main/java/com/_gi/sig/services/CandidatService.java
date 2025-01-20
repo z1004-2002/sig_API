@@ -7,12 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com._gi.sig.models.Candidat;
+import com._gi.sig.models.Result;
 import com._gi.sig.repository.CandidatRepository;
+import com._gi.sig.repository.ResultatRepository;
 
 @Service
 public class CandidatService {
     @Autowired
     private CandidatRepository candidatRepository;
+    @Autowired
+    private ResultatRepository resultatRepository;
 
     public Candidat create(Candidat candidat) {
         return candidatRepository.save(candidat);
@@ -43,6 +47,10 @@ public class CandidatService {
         Candidat c = candidatRepository.findById(id).get();
         if (c == null) {
             throw new IllegalStateException("Candidat not found");
+        }
+        List<Result> results = resultatRepository.findByCandidatId(id);
+        for (Result result : results) {
+            resultatRepository.deleteById(result.getId());
         }
         candidatRepository.deleteById(id);
         return "Candidat with id " + id.toString() + " is deleted";

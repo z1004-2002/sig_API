@@ -16,4 +16,7 @@ public interface ResultatRepository extends JpaRepository<Result, UUID>{
 
     @Query("SELECT r FROM Result r WHERE r.bureauId = ?1")
     public List<Result> findByBureauId(UUID bureauId);
+
+    @Query("SELECT r FROM Result r WHERE r.candidatId = ?1")
+    public List<Result> findByCandidatId(UUID candidateId);
 }
