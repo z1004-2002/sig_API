@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com._gi.sig.dto.BureauRes;
+import com._gi.sig.dto.ResultBureau;
 import com._gi.sig.dto.ResultCandidat;
 import com._gi.sig.dto.ResultLevel;
 import com._gi.sig.dto.ResultRequest;
@@ -43,16 +44,16 @@ public class ResultService {
 
     }
 
-    public List<ResultLevel> resultByBureau() {
-        List<ResultLevel> resultLevels = getBureauLevel();
+    public List<ResultBureau> resultByBureau() {
+        List<ResultBureau> resultBureaus = getBureauLevel();
         List<ResultResponse> results = resultatRepository.findAll().stream()
                 .map(this::toResusltResponse)
                 .toList();
 
         for (ResultResponse r : results) {
-            resultLevels.stream().forEach(
+            resultBureaus.stream().forEach(
                     rl -> {
-                        if (rl.getName().equals(r.getBureau().getMatricule())) {
+                        if (rl.getMatricule().equals(r.getBureau().getMatricule())) {
                             rl.getResultCandidat().stream().forEach(
                                     rc -> {
                                         if (rc.getIdCandidat().equals(r.getCandidat().getId())) {
@@ -64,7 +65,7 @@ public class ResultService {
 
         }
 
-        return resultLevels;
+        return resultBureaus;
     }
 
     public ResultLevel getResultsForBureau(UUID bureauId) {
@@ -197,6 +198,11 @@ public class ResultService {
                 .anyMatch(r -> r.getName().equals(levelName));
     }
 
+    private boolean isInResultBureau(List<ResultBureau> resultLevels, String levelName) {
+        return resultLevels.stream()
+                .anyMatch(r -> r.getMatricule().equals(levelName));
+    }
+
     private ResultCandidat toResultCandidat(Candidat c) {
         return ResultCandidat.builder()
                 .idCandidat(c.getId())
@@ -222,7 +228,7 @@ public class ResultService {
     private List<ResultLevel> getRegionLevel() {
         List<ResultLevel> resultLevels = new ArrayList<>();
         List<BureauRes> bureauRes = bureauService.getAllBureauRes();
-        
+
         for (BureauRes br : bureauRes) {
             if (!isInResultLevel(resultLevels, br.getRegion())) {
                 List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
@@ -250,7 +256,7 @@ public class ResultService {
     private List<ResultLevel> getDepartementLevel() {
         List<ResultLevel> resultLevels = new ArrayList<>();
         List<BureauRes> bureauRes = bureauService.getAllBureauRes();
-        
+
         for (BureauRes br : bureauRes) {
             if (!isInResultLevel(resultLevels, br.getDepartement())) {
                 List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
@@ -278,7 +284,7 @@ public class ResultService {
     private List<ResultLevel> getArrondissementLevel() {
         List<ResultLevel> resultLevels = new ArrayList<>();
         List<BureauRes> bureauRes = bureauService.getAllBureauRes();
-        
+
         for (BureauRes br : bureauRes) {
             if (!isInResultLevel(resultLevels, br.getArrondisssement())) {
                 List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
@@ -303,32 +309,34 @@ public class ResultService {
         return resultLevels;
     }
 
-    private List<ResultLevel> getBureauLevel() {
-        List<ResultLevel> resultLevels = new ArrayList<>();
+    private List<ResultBureau> getBureauLevel() {
+        List<ResultBureau> resultBureaus = new ArrayList<>();
         List<BureauRes> bureauRes = bureauService.getAllBureauRes();
-        
+
         for (BureauRes br : bureauRes) {
-            if (!isInResultLevel(resultLevels, br.getMatricule())) {
+            if (!isInResultBureau(resultBureaus, br.getMatricule())) {
                 List<ResultCandidat> candidats = candidatService.getAllCandidat().stream()
                         .map(this::toResultCandidat)
                         .toList();
-                ResultLevel rl = ResultLevel.builder()
-                        .level("bureau")
-                        .name(br.getMatricule())
+                ResultBureau rl = ResultBureau.builder()
+                        .Region(br.getRegion())
+                        .departement(br.getDepartement())
+                        .arrondissement(br.getArrondisssement()) 
+                        .matricule(br.getMatricule())
                         .resultCandidat(new ArrayList<>(candidats))
                         .totalElecteur(br.getNbreElecteurs())
                         .build();
-                resultLevels.add(rl);
+                resultBureaus.add(rl);
             } else {
-                resultLevels.stream().forEach(
+                resultBureaus.stream().forEach(
                         r -> {
-                            if (r.getName().equals(br.getMatricule())) {
+                            if (r.getMatricule().equals(br.getMatricule())) {
                                 r.setTotalElecteur(r.getTotalElecteur() + br.getNbreElecteurs());
                             }
                         });
             }
         }
-        return resultLevels;
+        return resultBureaus;
     }
 
     private ResultLevel getBureau(UUID bureauId) {

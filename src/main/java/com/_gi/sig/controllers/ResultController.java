@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._gi.sig.dto.ResultBureau;
 import com._gi.sig.dto.ResultLevel;
 import com._gi.sig.dto.ResultRequest;
 import com._gi.sig.dto.ResultResponse;
@@ -45,7 +46,7 @@ public class ResultController {
     }
 
     @GetMapping("/bureau")
-    public List<ResultLevel> resultByBureau() {
+    public List<ResultBureau> resultByBureau() {
         return resultService.resultByBureau();
     }
     @GetMapping("/arrondissement")
